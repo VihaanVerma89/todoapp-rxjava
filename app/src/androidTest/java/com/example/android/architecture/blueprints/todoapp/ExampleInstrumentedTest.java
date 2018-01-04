@@ -1,4 +1,4 @@
-package com.example.android.architecture.blueprints.todomvp;
+package com.example.android.architecture.blueprints.todoapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

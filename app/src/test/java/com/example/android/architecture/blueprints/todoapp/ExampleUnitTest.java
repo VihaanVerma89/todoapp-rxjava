@@ -1,4 +1,4 @@
-package com.example.android.architecture.blueprints.todomvp;
+package com.example.android.architecture.blueprints.todoapp;
 
 import org.junit.Test;
 
