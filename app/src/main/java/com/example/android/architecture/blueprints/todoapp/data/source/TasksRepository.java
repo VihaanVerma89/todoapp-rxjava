@@ -2,6 +2,8 @@ package com.example.android.architecture.blueprints.todoapp.data.source;
 
 import android.support.annotation.NonNull;
 
+import com.example.android.architecture.blueprints.todoapp.data.Task;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -30,5 +32,12 @@ public class TasksRepository implements TasksDataSource {
             INSTANCE = new TasksRepository(tasksRemoteDataSource, tasksLocalDataSource);
         }
         return INSTANCE;
+    }
+
+    @Override
+    public void saveTask(@NonNull Task task) {
+        checkNotNull(task);
+        mTasksRemoteDataSource.saveTask(task);
+        mTasksLocalDataSource.saveTask(task);
     }
 }
