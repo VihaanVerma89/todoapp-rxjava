@@ -54,4 +54,9 @@ public class TasksPresenter implements TasksContract.Presenter {
     public void unsubscribe() {
 
     }
+
+    @Override
+    public void addNewTask() {
+        mTasksView.showAddTask();
+    }
 }

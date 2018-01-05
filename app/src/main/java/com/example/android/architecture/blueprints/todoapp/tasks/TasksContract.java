@@ -10,11 +10,11 @@ import com.example.android.architecture.blueprints.todoapp.BaseView;
 public interface TasksContract {
 
     interface View extends BaseView<Presenter>{
-
+        void showAddTask();
     }
 
     interface Presenter extends BasePresenter
     {
-
+        void addNewTask();
     }
 }
