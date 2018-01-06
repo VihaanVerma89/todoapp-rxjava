@@ -73,7 +73,16 @@ public class AddEditTaskPresenter implements AddEditTaskContract.Presenter {
 
     @Override
     public void saveTask(String title, String description) {
+        if(isNewTask())
+        {
+            createTask(title, description);
+        }else{
 
+        }
+    }
+
+    private boolean isNewTask() {
+        return mTaskId == null;
     }
 
     private void createTask(String title, String description){
@@ -83,6 +92,7 @@ public class AddEditTaskPresenter implements AddEditTaskContract.Presenter {
             mAddTaskView.showEmptyTaskError();
         }
         else{
+            mTasksRepository.saveTask(newTask);
             mAddTaskView.showTasksList();
         }
     }

@@ -4,6 +4,10 @@ import android.support.annotation.NonNull;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 
+import java.util.List;
+
+import io.reactivex.Flowable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -40,4 +44,23 @@ public class TasksRepository implements TasksDataSource {
         mTasksRemoteDataSource.saveTask(task);
         mTasksLocalDataSource.saveTask(task);
     }
+
+    @Override
+    public Flowable<List<Task>> getTasks() {
+        Flowable<List<Task>> remoteTasks= getAndSaveRemoteTasks();
+        return remoteTasks;
+    }
+
+
+    private Flowable<List<Task>> getAndSaveRemoteTasks() {
+        return mTasksRemoteDataSource
+                .getTasks()
+                .flatMap( tasks -> Flowable.fromIterable(tasks).doOnNext( task -> { } ) )
+                .toList()
+                .toFlowable()
+                .doOnComplete(() -> {
+                });
+    }
+
+
 }

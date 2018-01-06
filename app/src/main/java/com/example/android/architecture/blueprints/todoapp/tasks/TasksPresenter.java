@@ -1,11 +1,18 @@
 package com.example.android.architecture.blueprints.todoapp.tasks;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskActivity;
+import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.util.BaseSchedulerProvider;
 
+import java.util.List;
+
+import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,12 +54,67 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void subscribe() {
-
+        loadTasks(false);
     }
 
     @Override
     public void unsubscribe() {
 
+    }
+
+    @Override
+    public void loadTasks(boolean forceUpdate) {
+        mCompositeDisposable.clear();
+        Disposable disposable = mTasksRepository
+                .getTasks()
+                .flatMap(Flowable::fromIterable)
+                .toList()
+                .subscribeOn(mSchedulerProvider.io())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(tasks -> {
+                            processTasks(tasks);
+                            mTasksView.setLoadingIndicator(false);
+                        },
+                        throwable -> {
+                            mTasksView.showLoadingTasksError();
+                        });
+
+        mCompositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void openTaskDetails(@NonNull Task task) {
+
+    }
+
+    @Override
+    public void completeTask(@NonNull Task task) {
+
+    }
+
+    @Override
+    public void activateTask(@NonNull Task task) {
+
+    }
+
+    private void processTasks(@NonNull List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            processEmptyTasks();
+        } else {
+            mTasksView.showTasks(tasks);
+        }
+    }
+
+    private void processEmptyTasks() {
+        mTasksView.showNoTasks();
+    }
+
+    @Override
+    public void result(int requestCode, int resultCode) {
+
+        if (AddEditTaskActivity.REQUEST_ADD_TASK == requestCode && Activity.RESULT_OK == resultCode) {
+
+        }
     }
 
     @Override
