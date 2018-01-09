@@ -21,6 +21,7 @@ public interface TasksContract {
         void showTasks(List<Task> tasks);
         void setLoadingIndicator(boolean status);
         void showLoadingTasksError();
+        void showTaskDetailsUi(String taskId);
     }
 
     interface Presenter extends BasePresenter

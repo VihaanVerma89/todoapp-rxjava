@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.data.source;
 import android.support.annotation.NonNull;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ import io.reactivex.Flowable;
 public interface TasksDataSource {
     void saveTask(@NonNull Task task);
     Flowable<List<Task>> getTasks();
+    Flowable<Optional<Task>> getTask(@NonNull String taskId);
 }

@@ -84,7 +84,8 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void openTaskDetails(@NonNull Task task) {
-
+        checkNotNull(task, "requestedTask cannot be null!");
+        mTasksView.showTaskDetailsUi(task.getId());
     }
 
     @Override

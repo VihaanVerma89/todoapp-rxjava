@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.data;
 import android.support.annotation.NonNull;
 
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
+import com.google.common.base.Optional;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,5 +39,11 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
     public Flowable<List<Task>> getTasks() {
         Collection<Task> values = TASKS_SERVICE_DATA.values();
         return Flowable.fromIterable(values).toList().toFlowable();
+    }
+
+    @Override
+    public Flowable<Optional<Task>> getTask(@NonNull String taskId) {
+        Task task = TASKS_SERVICE_DATA.get(taskId);
+        return Flowable.just(Optional.of(task));
     }
 }

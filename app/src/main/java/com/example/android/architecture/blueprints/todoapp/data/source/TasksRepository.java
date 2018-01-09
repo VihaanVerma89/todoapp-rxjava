@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.data.source;
 import android.support.annotation.NonNull;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -51,6 +52,25 @@ public class TasksRepository implements TasksDataSource {
         return remoteTasks;
     }
 
+    @Override
+    public Flowable<Optional<Task>> getTask(@NonNull String taskId) {
+        Flowable<Optional<Task>> localTask = getTaskWithIdFromLocalRepository(taskId);
+        Flowable<Optional<Task>> remoteTask = mTasksRemoteDataSource
+                .getTask(taskId)
+                .doOnNext(optionalTask->{
+
+                    if(optionalTask.isPresent())
+                    {
+                        Task task = optionalTask.get();
+                    }
+                });
+
+
+        return Flowable.concat(localTask, remoteTask)
+                .firstElement()
+                .toFlowable();
+    }
+
 
     private Flowable<List<Task>> getAndSaveRemoteTasks() {
         return mTasksRemoteDataSource
@@ -63,4 +83,11 @@ public class TasksRepository implements TasksDataSource {
     }
 
 
+    Flowable<Optional<Task>> getTaskWithIdFromLocalRepository(@NonNull final String taskId)
+    {
+        return mTasksLocalDataSource
+                .getTask(taskId)
+                .firstElement()
+                .toFlowable();
+    }
 }
