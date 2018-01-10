@@ -82,6 +82,12 @@ public class TasksScreenTest {
         onView(withItemText(TITLE1)).check(doesNotExist());
     }
 
+    @Test
+    public void addTaskToTasksList(){
+        createTask(TITLE1, DESCRIPTION);
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+    }
+
     private Matcher<View> withItemText(String itemText)
     {
         checkArgument(!TextUtils.isEmpty(itemText), "itemText cannot be null or empty");
