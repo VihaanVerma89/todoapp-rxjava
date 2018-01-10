@@ -3,9 +3,17 @@ package com.example.android.architecture.blueprints.todoapp.tasks;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ListView;
 
 import com.example.android.architecture.blueprints.todoapp.R;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.AllOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +21,17 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkArgument;
+import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.core.AllOf.allOf;
 
 /**
  * Created by vihaanverma on 07/01/18.
@@ -49,7 +63,40 @@ public class TasksScreenTest {
     public void editTask(){
         createTask(TITLE1, DESCRIPTION);
         onView(withText(TITLE1)).perform(click());
-//        onView(withId(R.id.fab)).perform(click());
+
+        onView(withId(R.id.fab_edit_task)).perform(click());
+
+        String editTaskTitle = TITLE2;
+        String editTaskDescription = "New Description";
+
+        onView(withId(R.id.add_task_title))
+                .perform(replaceText(editTaskTitle), closeSoftKeyboard());
+
+        onView(withId(R.id.add_task_description))
+                .perform(replaceText(editTaskDescription),closeSoftKeyboard());
+
+        onView(withId(R.id.fab_edit_task_done))
+                .perform(click());
+
+        onView(withItemText(editTaskTitle)).check(matches(isDisplayed()));
+        onView(withItemText(TITLE1)).check(doesNotExist());
+    }
+
+    private Matcher<View> withItemText(String itemText)
+    {
+        checkArgument(!TextUtils.isEmpty(itemText), "itemText cannot be null or empty");
+        return new TypeSafeMatcher<View>() {
+            @Override
+            protected boolean matchesSafely(View item) {
+                return allOf( isDescendantOfA(isAssignableFrom(ListView.class))
+                        , withText(itemText)).matches(item);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("is isDescendantOfA LV with text " + itemText);
+            }
+        };
     }
 
     private void createTask(String title, String description){

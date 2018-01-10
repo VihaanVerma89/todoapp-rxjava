@@ -63,78 +63,81 @@ public class AddEditTaskPresenter implements AddEditTaskContract.Presenter {
 
     @Override
     public void subscribe() {
-
+        if (!isNewTask() && mIsDataMissing) {
+            populateTask();
+        }
     }
 
     @Override
     public void unsubscribe() {
-
+        mCompositeDisposable.clear();
     }
 
     @Override
     public void saveTask(String title, String description) {
-        if(isNewTask())
-        {
+        if (isNewTask()) {
             createTask(title, description);
-        }else{
-
+        } else {
+            updateTask(title,description);
         }
     }
+
+    @Override
+    public void populateTask() {
+
+        if (isNewTask()) {
+            throw new RuntimeException("populateTask() was called but task is new.");
+        }
+
+        mTasksRepository
+                .getTask(mTaskId)
+                .subscribeOn(mSchedulerProvider.computation())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(taskOptional -> {
+                            if (taskOptional.isPresent()) {
+                                Task task = taskOptional.get();
+                                if (mAddTaskView.isActive()) {
+                                    mAddTaskView.setTitle(task.getTitle());
+                                    mAddTaskView.setDescription(task.getDescription());
+                                    mIsDataMissing = false;
+                                }
+                            } else {
+                                if (mAddTaskView.isActive()) {
+                                    mAddTaskView.showEmptyTaskError();
+                                }
+                            }
+                        },
+                        throwable -> {
+                            if (mAddTaskView.isActive()) {
+                                mAddTaskView.showEmptyTaskError();
+                            }
+                        });
+    }
+
 
     private boolean isNewTask() {
         return mTaskId == null;
     }
 
-    private void createTask(String title, String description){
+    private void createTask(String title, String description) {
         Task newTask = new Task(title, description);
-        if(newTask.isEmpty())
-        {
+        if (newTask.isEmpty()) {
             mAddTaskView.showEmptyTaskError();
-        }
-        else{
+        } else {
             mTasksRepository.saveTask(newTask);
             mAddTaskView.showTasksList();
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private void updateTask(String title, String description)
+    {
+        if(isNewTask())
+        {
+            throw new RuntimeException("updateTask() was called but task is new.");
+        }
+        mTasksRepository.saveTask(new Task(title, description, mTaskId));
+        mAddTaskView.showTasksList();
+    }
 
 
 }

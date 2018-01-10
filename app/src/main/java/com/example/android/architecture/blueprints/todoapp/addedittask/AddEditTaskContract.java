@@ -11,9 +11,16 @@ public interface AddEditTaskContract {
     interface View extends BaseView<Presenter>{
         void showEmptyTaskError();
         void showTasksList();
+
+        boolean isActive();
+
+        void setTitle(String title);
+
+        void setDescription(String title);
     }
 
     interface Presenter extends BasePresenter{
         void saveTask(String title, String description);
+        void populateTask();
     }
 }

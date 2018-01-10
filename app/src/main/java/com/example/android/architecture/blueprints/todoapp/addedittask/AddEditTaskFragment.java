@@ -83,4 +83,19 @@ public class AddEditTaskFragment extends Fragment implements AddEditTaskContract
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
+
+    @Override
+    public boolean isActive() {
+        return isAdded();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        mTitle.setText(title);
+    }
+
+    @Override
+    public void setDescription(String title) {
+        mDescription.setText(title);
+    }
 }
