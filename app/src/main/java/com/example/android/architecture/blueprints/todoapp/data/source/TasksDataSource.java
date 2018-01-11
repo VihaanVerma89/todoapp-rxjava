@@ -17,4 +17,5 @@ public interface TasksDataSource {
     void saveTask(@NonNull Task task);
     Flowable<List<Task>> getTasks();
     Flowable<Optional<Task>> getTask(@NonNull String taskId);
+    void deleteAllTasks();
 }

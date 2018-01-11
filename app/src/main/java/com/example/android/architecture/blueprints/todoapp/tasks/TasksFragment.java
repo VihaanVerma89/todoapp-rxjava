@@ -8,7 +8,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -143,6 +147,53 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         mTasksView.setVisibility(View.VISIBLE);
         mNoTasksView.setVisibility(View.GONE);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_clear:
+                mPresenter.clearCompletedTasks();
+                break;
+            case R.id.menu_filter:
+                showFilteringPopUpMenu();
+                break;
+            case R.id.menu_refresh:
+                mPresenter.loadTasks(true);
+                break;
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.tasks_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public void showFilteringPopUpMenu() {
+        PopupMenu popup = new PopupMenu(getContext(), getActivity().findViewById(R.id.menu_filter));
+        popup.getMenuInflater().inflate(R.menu.filter_tasks, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.active:
+                    mPresenter.setFiltering(TasksFilterType.ACTIVE_TASKS);
+                    break;
+                case R.id.completed:
+                    mPresenter.setFiltering(TasksFilterType.COMPLETED_TASKS);
+                    break;
+                default:
+                    mPresenter.setFiltering(TasksFilterType.ALL_TASKS);
+                    break;
+            }
+            mPresenter.loadTasks(false);
+            return true;
+        });
+
+        popup.show();
+    }
+
 
     TaskItemListener mItemListener = new TaskItemListener() {
         @Override

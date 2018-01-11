@@ -32,5 +32,8 @@ public interface TasksContract {
         void openTaskDetails(@NonNull Task task);
         void completeTask(@NonNull Task task);
         void activateTask(@NonNull Task task);
+
+        void clearCompletedTasks();
+        void setFiltering(TasksFilterType requestType);
     }
 }

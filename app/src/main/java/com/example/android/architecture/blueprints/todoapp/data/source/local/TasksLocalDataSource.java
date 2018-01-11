@@ -122,4 +122,9 @@ public class TasksLocalDataSource implements TasksDataSource {
                         Optional.<Task>absent())
                 .toFlowable(BackpressureStrategy.BUFFER);
     }
+
+    @Override
+    public void deleteAllTasks() {
+        mDatabaseHelper.delete(TaskEntry.TABLE_NAME, null);
+    }
 }

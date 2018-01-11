@@ -98,6 +98,16 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     }
 
+    @Override
+    public void clearCompletedTasks() {
+
+    }
+
+    @Override
+    public void setFiltering(TasksFilterType requestType) {
+
+    }
+
     private void processTasks(@NonNull List<Task> tasks) {
         if (tasks.isEmpty()) {
             processEmptyTasks();

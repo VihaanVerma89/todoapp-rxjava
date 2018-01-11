@@ -46,4 +46,9 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
         Task task = TASKS_SERVICE_DATA.get(taskId);
         return Flowable.just(Optional.of(task));
     }
+
+    @Override
+    public void deleteAllTasks() {
+        TASKS_SERVICE_DATA.clear();
+    }
 }

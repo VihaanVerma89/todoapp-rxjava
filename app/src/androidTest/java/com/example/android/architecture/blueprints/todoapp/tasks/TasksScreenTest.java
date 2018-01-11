@@ -1,5 +1,6 @@
 package com.example.android.architecture.blueprints.todoapp.tasks;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
 
+import com.example.android.architecture.blueprints.todoapp.Injection;
 import com.example.android.architecture.blueprints.todoapp.R;
 
 import org.hamcrest.Description;
@@ -49,7 +51,13 @@ public class TasksScreenTest {
 
     @Rule
     public ActivityTestRule<TasksActivity> mTaskActivityRule=
-            new ActivityTestRule<TasksActivity>(TasksActivity.class);
+            new ActivityTestRule<TasksActivity>(TasksActivity.class){
+                @Override
+                protected void beforeActivityLaunched() {
+                    super.beforeActivityLaunched();
+                    Injection.provideTasksRepository(InstrumentationRegistry.getTargetContext())
+                }
+            };
 
 
     @Test
