@@ -55,7 +55,7 @@ public class TasksScreenTest {
                 @Override
                 protected void beforeActivityLaunched() {
                     super.beforeActivityLaunched();
-                    Injection.provideTasksRepository(InstrumentationRegistry.getTargetContext())
+                    Injection.provideTasksRepository(InstrumentationRegistry.getTargetContext());
                 }
             };
 

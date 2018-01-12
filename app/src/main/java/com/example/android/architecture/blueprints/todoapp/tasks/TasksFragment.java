@@ -78,6 +78,11 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         mPresenter = presenter;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mPresenter.result(requestCode, resultCode);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -120,33 +125,6 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         return root;
     }
 
-    @Override
-    public void showAddTask() {
-        Intent intent = new Intent(getContext(), AddEditTaskActivity.class);
-        startActivityForResult(intent, AddEditTaskActivity.REQUEST_ADD_TASK);
-    }
-
-    @Override
-    public void showSuccessfullySavedMessage() {
-        showMessage(getString(R.string.successfully_saved_task_message));
-    }
-
-    @Override
-    public void showNoTasks() {
-        showNoTasksViews(
-                getResources().getString(R.string.no_tasks_all),
-                R.drawable.ic_assignment_turned_in_24dp,
-                false
-        );
-    }
-
-    @Override
-    public void showTasks(List<Task> tasks) {
-        mListAdapter.replaceData(tasks);
-
-        mTasksView.setVisibility(View.VISIBLE);
-        mNoTasksView.setVisibility(View.GONE);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -162,13 +140,6 @@ public class TasksFragment extends Fragment implements TasksContract.View {
                 break;
         }
         return true;
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.tasks_fragment_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void showFilteringPopUpMenu() {
@@ -212,6 +183,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         }
     };
 
+
     @Override
     public void setLoadingIndicator(final boolean active) {
 
@@ -224,6 +196,40 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         srl.post(() -> srl.setRefreshing(active));
     }
 
+    @Override
+    public void showTasks(List<Task> tasks) {
+        mListAdapter.replaceData(tasks);
+
+        mTasksView.setVisibility(View.VISIBLE);
+        mNoTasksView.setVisibility(View.GONE);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.tasks_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void showAddTask() {
+        Intent intent = new Intent(getContext(), AddEditTaskActivity.class);
+        startActivityForResult(intent, AddEditTaskActivity.REQUEST_ADD_TASK);
+    }
+
+    @Override
+    public void showSuccessfullySavedMessage() {
+        showMessage(getString(R.string.successfully_saved_task_message));
+    }
+
+    @Override
+    public void showNoTasks() {
+        showNoTasksViews(
+                getResources().getString(R.string.no_tasks_all),
+                R.drawable.ic_assignment_turned_in_24dp,
+                false
+        );
+    }
     @Override
     public void showLoadingTasksError() {
         showMessage(getString(R.string.loading_tasks_error));
@@ -238,6 +244,35 @@ public class TasksFragment extends Fragment implements TasksContract.View {
         startActivity(intent);
     }
 
+    @Override
+    public void showNoActiveTasks() {
+
+    }
+
+    @Override
+    public void showNoCompletedTasks() {
+
+    }
+
+    @Override
+    public void showActiveFilterLabel() {
+
+    }
+
+    @Override
+    public void showCompletedFilterLabel() {
+
+    }
+
+    @Override
+    public void showAllFilterLabel() {
+
+    }
+
+    @Override
+    public void showTaskMarkedComplete() {
+        showMessage(getString(R.string.task_marked_complete));
+    }
 
 
     private void showMessage(String message) {

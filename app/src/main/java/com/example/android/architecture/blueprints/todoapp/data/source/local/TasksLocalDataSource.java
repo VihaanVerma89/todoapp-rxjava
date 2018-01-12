@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.widget.AutoCompleteTextView;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
@@ -126,5 +127,20 @@ public class TasksLocalDataSource implements TasksDataSource {
     @Override
     public void deleteAllTasks() {
         mDatabaseHelper.delete(TaskEntry.TABLE_NAME, null);
+    }
+
+    @Override
+    public void completeTask(Task task) {
+        completeTask(task.getId());
+    }
+
+    @Override
+    public void completeTask(String taskId) {
+        ContentValues values = new ContentValues();
+        values.put(TaskEntry.COLUMN_NAME_COMPLETED, true);
+
+        String selection = TaskEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
+        String[] selectionArgs = {taskId};
+        mDatabaseHelper.update(TaskEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 }

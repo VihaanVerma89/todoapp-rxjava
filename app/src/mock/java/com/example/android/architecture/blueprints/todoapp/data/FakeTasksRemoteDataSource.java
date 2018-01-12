@@ -51,4 +51,17 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
     public void deleteAllTasks() {
         TASKS_SERVICE_DATA.clear();
     }
+
+    @Override
+    public void completeTask(Task task) {
+        Task completedTask = new Task(task.getTitle(), task.getDescription(), task.getId(), true);
+        TASKS_SERVICE_DATA.put(task.getId(), completedTask);
+    }
+
+    @Override
+    public void completeTask(String taskId) {
+        Task task = TASKS_SERVICE_DATA.get(taskId);
+        Task completedTask = new Task(task.getTitle(), task.getDescription(), task.getId(), true);
+        TASKS_SERVICE_DATA.put(taskId, completedTask);
+    }
 }

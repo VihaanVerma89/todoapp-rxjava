@@ -8,6 +8,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.util.BaseSchedulerProvider;
 
+import java.io.Serializable;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -34,6 +35,9 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @NonNull
     private CompositeDisposable mCompositeDisposable;
+
+    @NonNull
+    private TasksFilterType mCurrentFiltering = TasksFilterType.ALL_TASKS;
 
     public TasksPresenter(@NonNull TasksRepository tasksRepository,
                           @NonNull TasksContract.View tasksView,
@@ -68,6 +72,17 @@ public class TasksPresenter implements TasksContract.Presenter {
         Disposable disposable = mTasksRepository
                 .getTasks()
                 .flatMap(Flowable::fromIterable)
+                .filter(task -> {
+                    switch (mCurrentFiltering) {
+                        case ACTIVE_TASKS:
+                            return task.isActive();
+                        case COMPLETED_TASKS:
+                            return task.isCompleted();
+                        case ALL_TASKS:
+                        default:
+                            return true;
+                    }
+                })
                 .toList()
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
@@ -90,7 +105,10 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void completeTask(@NonNull Task task) {
-
+        checkNotNull(task, "completedTask cannot be null!");
+        mTasksRepository.completeTask(task);
+        mTasksView.showTaskMarkedComplete();
+        loadTasks(false);
     }
 
     @Override
@@ -105,7 +123,12 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void setFiltering(TasksFilterType requestType) {
+        mCurrentFiltering = requestType;
+    }
 
+    @Override
+    public TasksFilterType getFiltering() {
+        return mCurrentFiltering;
     }
 
     private void processTasks(@NonNull List<Task> tasks) {
@@ -113,11 +136,37 @@ public class TasksPresenter implements TasksContract.Presenter {
             processEmptyTasks();
         } else {
             mTasksView.showTasks(tasks);
+            showFilterLabel();
+        }
+    }
+
+    private void showFilterLabel() {
+        switch(mCurrentFiltering)
+        {
+            case ACTIVE_TASKS:
+                mTasksView.showActiveFilterLabel();
+                break;
+            case COMPLETED_TASKS:
+                mTasksView.showCompletedFilterLabel();
+                break;
+            default:
+                mTasksView.showAllFilterLabel();
+                break;
         }
     }
 
     private void processEmptyTasks() {
-        mTasksView.showNoTasks();
+        switch (mCurrentFiltering) {
+            case ACTIVE_TASKS:
+                mTasksView.showNoActiveTasks();
+                break;
+            case COMPLETED_TASKS:
+                mTasksView.showNoCompletedTasks();
+                break;
+            default:
+                mTasksView.showNoTasks();
+                break;
+        }
     }
 
     @Override

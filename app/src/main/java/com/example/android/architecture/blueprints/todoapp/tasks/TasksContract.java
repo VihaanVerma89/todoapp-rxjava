@@ -6,6 +6,7 @@ import com.example.android.architecture.blueprints.todoapp.BasePresenter;
 import com.example.android.architecture.blueprints.todoapp.BaseView;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -22,6 +23,18 @@ public interface TasksContract {
         void setLoadingIndicator(boolean status);
         void showLoadingTasksError();
         void showTaskDetailsUi(String taskId);
+
+        void showNoActiveTasks();
+
+        void showNoCompletedTasks();
+
+        void showActiveFilterLabel();
+
+        void showCompletedFilterLabel();
+
+        void showAllFilterLabel();
+
+        void showTaskMarkedComplete();
     }
 
     interface Presenter extends BasePresenter
@@ -35,5 +48,7 @@ public interface TasksContract {
 
         void clearCompletedTasks();
         void setFiltering(TasksFilterType requestType);
+
+        TasksFilterType getFiltering();
     }
 }

@@ -18,4 +18,8 @@ public interface TasksDataSource {
     Flowable<List<Task>> getTasks();
     Flowable<Optional<Task>> getTask(@NonNull String taskId);
     void deleteAllTasks();
+
+    void completeTask(Task task);
+
+    void completeTask(String id);
 }
