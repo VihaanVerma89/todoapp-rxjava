@@ -246,7 +246,11 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showNoActiveTasks() {
-
+        showNoTasksViews(
+                getResources().getString(R.string.no_tasks_active),
+                R.drawable.ic_check_circle_24dp,
+                false
+        );
     }
 
     @Override

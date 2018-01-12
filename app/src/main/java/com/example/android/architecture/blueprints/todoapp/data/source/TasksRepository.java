@@ -73,6 +73,7 @@ public class TasksRepository implements TasksDataSource {
 
     @Override
     public void deleteAllTasks() {
+        mTasksRemoteDataSource.deleteAllTasks();
         mTasksLocalDataSource.deleteAllTasks();
     }
 

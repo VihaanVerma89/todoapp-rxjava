@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.reactivex.internal.operators.flowable.FlowableTimeoutTimed;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -28,11 +30,13 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkArgument;
+import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 /**
@@ -55,7 +59,8 @@ public class TasksScreenTest {
                 @Override
                 protected void beforeActivityLaunched() {
                     super.beforeActivityLaunched();
-                    Injection.provideTasksRepository(InstrumentationRegistry.getTargetContext());
+                    Injection.provideTasksRepository(InstrumentationRegistry.getTargetContext())
+                            .deleteAllTasks();
                 }
             };
 
@@ -96,6 +101,21 @@ public class TasksScreenTest {
         onView(withItemText(TITLE1)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void markTaskAsComplete(){
+        viewAllTasks();
+        createTask(TITLE1, DESCRIPTION);
+
+        clickCheckBoxForTask(TITLE1);
+
+        viewAllTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        viewActiveTasks();
+        onView(withItemText(TITLE1)).check(matches(not(isDisplayed())));
+        viewCompletedTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+    }
+
     private Matcher<View> withItemText(String itemText)
     {
         checkArgument(!TextUtils.isEmpty(itemText), "itemText cannot be null or empty");
@@ -113,10 +133,80 @@ public class TasksScreenTest {
         };
     }
 
+    private void viewAllTasks(){
+        onView(withId(R.id.menu_filter)).perform(click());
+        onView(withText(R.string.nav_all)).perform(click());
+    }
+
+    private void viewActiveTasks(){
+        onView(withId(R.id.menu_filter)).perform(click());
+        onView(withText(R.string.nav_active)).perform(click());
+    }
+
+    private void viewCompletedTasks(){
+        onView(withId(R.id.menu_filter)).perform(click());
+        onView(withText(R.string.nav_completed)).perform(click());
+    }
+
+    private void clickCheckBoxForTask(String title){
+        onView(allOf(withId(R.id.complete), hasSibling(withText(title)))).perform(click());
+    }
+
     private void createTask(String title, String description){
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.add_task_title)).perform(typeText(title),closeSoftKeyboard());
         onView(withId(R.id.add_task_description)).perform(typeText(description),closeSoftKeyboard());
         onView(withId(R.id.fab_edit_task_done)).perform(click());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

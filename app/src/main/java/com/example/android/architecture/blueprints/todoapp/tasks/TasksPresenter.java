@@ -7,6 +7,7 @@ import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTa
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.util.BaseSchedulerProvider;
+import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,6 +69,7 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void loadTasks(boolean forceUpdate) {
+        EspressoIdlingResource.increment();
         mCompositeDisposable.clear();
         Disposable disposable = mTasksRepository
                 .getTasks()
@@ -86,6 +88,11 @@ public class TasksPresenter implements TasksContract.Presenter {
                 .toList()
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
+                .doFinally(() -> {
+                    if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                        EspressoIdlingResource.decrement();
+                    }
+                })
                 .subscribe(tasks -> {
                             processTasks(tasks);
                             mTasksView.setLoadingIndicator(false);
@@ -141,8 +148,7 @@ public class TasksPresenter implements TasksContract.Presenter {
     }
 
     private void showFilterLabel() {
-        switch(mCurrentFiltering)
-        {
+        switch (mCurrentFiltering) {
             case ACTIVE_TASKS:
                 mTasksView.showActiveFilterLabel();
                 break;
