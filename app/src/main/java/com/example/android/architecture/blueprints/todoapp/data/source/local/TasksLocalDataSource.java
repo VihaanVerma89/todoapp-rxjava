@@ -54,7 +54,7 @@ public class TasksLocalDataSource implements TasksDataSource {
         TasksDbHelper dbHelper = new TasksDbHelper(context);
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
         mDatabaseHelper = sqlBrite.wrapDatabaseHelper(dbHelper, schedulerProvider.io());
-        mTaskMapperFunction=this::getTask;
+        mTaskMapperFunction = this::getTask;
     }
 
     @NonNull
@@ -109,7 +109,7 @@ public class TasksLocalDataSource implements TasksDataSource {
 
     @Override
     public Flowable<Optional<Task>> getTask(@NonNull String taskId) {
-               String[] projection = {
+        String[] projection = {
                 TaskEntry.COLUMN_NAME_ENTRY_ID,
                 TaskEntry.COLUMN_NAME_TITLE,
                 TaskEntry.COLUMN_NAME_DESCRIPTION,
@@ -142,5 +142,27 @@ public class TasksLocalDataSource implements TasksDataSource {
         String selection = TaskEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
         String[] selectionArgs = {taskId};
         mDatabaseHelper.update(TaskEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    @Override
+    public void activateTask(@NonNull Task task) {
+        activateTask(task.getId());
+    }
+
+    @Override
+    public void activateTask(@NonNull String taskId) {
+        ContentValues values = new ContentValues();
+        values.put(TaskEntry.COLUMN_NAME_COMPLETED, false);
+
+        String selection = TaskEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
+        String[] selectionArgs = {taskId};
+        mDatabaseHelper.update(TaskEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    @Override
+    public void clearCompletedTasks() {
+        String selection = TaskEntry.COLUMN_NAME_COMPLETED + " LIKE ?";
+        String[] selectionArgs = {"1"};
+        mDatabaseHelper.delete(TaskEntry.TABLE_NAME, selection, selectionArgs);
     }
 }

@@ -16,13 +16,16 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.AllOf;
+import org.hamcrest.core.IsNot;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.reactivex.internal.operators.flowable.FlowableTimeoutTimed;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -36,6 +39,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -115,6 +119,83 @@ public class TasksScreenTest {
         viewCompletedTasks();
         onView(withItemText(TITLE1)).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void markTaskAsActive(){
+        viewAllTasks();
+
+        createTask(TITLE1, DESCRIPTION);
+        clickCheckBoxForTask(TITLE1);
+
+        clickCheckBoxForTask(TITLE1);
+
+        viewAllTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        viewActiveTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        viewCompletedTasks();
+        onView(withItemText(TITLE1)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    public void showAllTasks() {
+        // Add 2 active tasks
+        createTask(TITLE1, DESCRIPTION);
+        createTask(TITLE2, DESCRIPTION);
+
+        //Verify that all our tasks are shown
+        viewAllTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        onView(withItemText(TITLE2)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void showActiveTasks() {
+        // Add 2 active tasks
+        createTask(TITLE1, DESCRIPTION);
+        createTask(TITLE2, DESCRIPTION);
+
+        //Verify that all our tasks are shown
+        viewActiveTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        onView(withItemText(TITLE2)).check(matches(isDisplayed()));
+    }
+
+
+    @Test
+    public void showCompletedTasks() {
+        // Add 2 completed tasks
+        createTask(TITLE1, DESCRIPTION);
+        clickCheckBoxForTask(TITLE1);
+        createTask(TITLE2, DESCRIPTION);
+        clickCheckBoxForTask(TITLE2);
+
+        // Verify that all our tasks are shown
+        viewCompletedTasks();
+        onView(withItemText(TITLE1)).check(matches(isDisplayed()));
+        onView(withItemText(TITLE2)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void clearCompletedTasks() {
+        viewAllTasks();
+
+        // Add 2 complete tasks
+        createTask(TITLE1, DESCRIPTION);
+        clickCheckBoxForTask(TITLE1);
+        createTask(TITLE2, DESCRIPTION);
+        clickCheckBoxForTask(TITLE2);
+
+        // Click clear completed in menu
+        openActionBarOverflowOrOptionsMenu(getTargetContext());
+        onView(withText(R.string.menu_clear)).perform(click());
+
+        //Verify that completed tasks are not shown
+        onView(withItemText(TITLE1)).check(matches(IsNot.not(isDisplayed())));
+        onView(withItemText(TITLE2)).check(matches(IsNot.not(isDisplayed())));
+    }
+
+
 
     private Matcher<View> withItemText(String itemText)
     {

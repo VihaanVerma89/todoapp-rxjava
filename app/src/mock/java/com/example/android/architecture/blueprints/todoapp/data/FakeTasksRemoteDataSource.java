@@ -6,6 +6,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.google.common.base.Optional;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,10 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
     private static FakeTasksRemoteDataSource INSTANCE;
 
     private static final Map<String, Task> TASKS_SERVICE_DATA = new LinkedHashMap<>();
+
     // Prevent direct instantiation.
-    private FakeTasksRemoteDataSource() {}
+    private FakeTasksRemoteDataSource() {
+    }
 
     public static FakeTasksRemoteDataSource getInstance() {
         if (INSTANCE == null) {
@@ -64,4 +67,30 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
         Task completedTask = new Task(task.getTitle(), task.getDescription(), task.getId(), true);
         TASKS_SERVICE_DATA.put(taskId, completedTask);
     }
+
+    @Override
+    public void activateTask(@NonNull Task task) {
+        Task activeTask = new Task(task.getTitle(), task.getDescription(), task.getId());
+        TASKS_SERVICE_DATA.put(task.getId(), activeTask);
+    }
+
+    @Override
+    public void activateTask(@NonNull String taskId) {
+        Task task = TASKS_SERVICE_DATA.get(taskId);
+        Task activeTask = new Task(task.getTitle(), task.getDescription(), task.getId());
+        TASKS_SERVICE_DATA.put(taskId, activeTask);
+    }
+
+    @Override
+    public void clearCompletedTasks() {
+
+        Iterator<Map.Entry<String, Task>> it = TASKS_SERVICE_DATA.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Task> entry = it.next();
+            if (entry.getValue().isCompleted()) {
+                it.remove();
+            }
+        }
+    }
+
 }

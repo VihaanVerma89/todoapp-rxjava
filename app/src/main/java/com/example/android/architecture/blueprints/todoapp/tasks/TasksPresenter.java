@@ -120,12 +120,17 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void activateTask(@NonNull Task task) {
-
+        checkNotNull(task, "activeTask cannot be null!");
+        mTasksRepository.activateTask(task);
+        mTasksView.showTaskMarkedActive();
+        loadTasks(false );
     }
 
     @Override
     public void clearCompletedTasks() {
-
+        mTasksRepository.clearCompletedTasks();
+        mTasksView.showCompletedTasksCleared();
+        loadTasks(false);
     }
 
     @Override

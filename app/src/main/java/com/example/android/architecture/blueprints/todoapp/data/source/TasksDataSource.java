@@ -22,4 +22,10 @@ public interface TasksDataSource {
     void completeTask(Task task);
 
     void completeTask(String id);
+
+    void activateTask(Task task);
+
+    void activateTask(@NonNull String taskId);
+
+    void clearCompletedTasks();
 }

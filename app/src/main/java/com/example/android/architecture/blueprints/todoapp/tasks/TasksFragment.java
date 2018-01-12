@@ -255,7 +255,11 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showNoCompletedTasks() {
-
+        showNoTasksViews(
+                getResources().getString(R.string.no_tasks_completed),
+                R.drawable.ic_verified_user_24dp,
+                false
+        );
     }
 
     @Override
@@ -276,6 +280,16 @@ public class TasksFragment extends Fragment implements TasksContract.View {
     @Override
     public void showTaskMarkedComplete() {
         showMessage(getString(R.string.task_marked_complete));
+    }
+
+    @Override
+    public void showTaskMarkedActive() {
+
+    }
+
+    @Override
+    public void showCompletedTasksCleared() {
+        showMessage(getString(R.string.completed_tasks_cleared));
     }
 
 

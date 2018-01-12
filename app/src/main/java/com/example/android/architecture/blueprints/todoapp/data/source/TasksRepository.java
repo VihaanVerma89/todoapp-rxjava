@@ -89,6 +89,24 @@ public class TasksRepository implements TasksDataSource {
 
     }
 
+    @Override
+    public void activateTask(Task task) {
+        checkNotNull(task);
+        mTasksRemoteDataSource.activateTask(task);
+        mTasksLocalDataSource.activateTask(task);
+    }
+
+    @Override
+    public void activateTask(@NonNull String taskId) {
+
+    }
+
+    @Override
+    public void clearCompletedTasks() {
+        mTasksRemoteDataSource.clearCompletedTasks();
+        mTasksLocalDataSource.clearCompletedTasks();
+    }
+
 
     private Flowable<List<Task>> getAndSaveRemoteTasks() {
         return mTasksRemoteDataSource
